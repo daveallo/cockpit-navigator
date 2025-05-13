@@ -1,3 +1,9 @@
+cockpit-navigator (0.5.10-2jammy) jammy; urgency=medium
+
+  * update rocky dependencies
+
+ -- Josh Boudreau <jboudreau@45drives.com>  Tue, 13 May 2025 08:05:51 -0300
+
 cockpit-navigator (0.5.10-1jammy) jammy; urgency=medium
 
   * build for jammy

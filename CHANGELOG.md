@@ -1,4 +1,3 @@
-## Cockpit Navigator 0.5.10-1
+## Cockpit Navigator 0.5.10-2
 
-* Disallow changing selected file/folder while editing permissions
-* Allow opening non-text file for editing via prompt
+* update rocky dependencies
