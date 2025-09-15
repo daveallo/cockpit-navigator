@@ -24,7 +24,8 @@
             "rsync",
             "zip",
             "file",
-            "coreutils"
+            "coreutils",
+            "inotify-tools"
         ],
         "rocky_common": [
             "cockpit",
@@ -33,7 +34,8 @@
             "zip",
             "file",
             "/bin/mkdir",
-            "/bin/rmdir"
+            "/bin/rmdir",
+            "inotify-tools"
         ]
     },
     "builds": [
