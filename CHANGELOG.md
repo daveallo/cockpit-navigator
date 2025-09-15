@@ -1,3 +1,3 @@
-## Cockpit Navigator 0.5.11-1
+## Cockpit Navigator 0.5.11-2
 
-* deleting tmp/navigotrs files and fixed auto  parent folder selection
+* build package
