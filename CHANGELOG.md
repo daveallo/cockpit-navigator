@@ -1,3 +1,3 @@
-## Cockpit Navigator 0.5.11-2
+## Cockpit Navigator 0.5.11-3
 
-* Building testing package for temp files/folder selection fixes
+* build package + fixed deletion method of tmp files

@@ -1,3 +1,9 @@
+cockpit-navigator (0.5.11-3bookworm) bookworm; urgency=medium
+
+  * build package + fixed deletion method of tmp files
+
+ -- Rachit Hans <rhans@45drives.com>  Tue, 16 Sep 2025 11:10:19 -0300
+
 cockpit-navigator (0.5.11-2bookworm) bookworm; urgency=medium
 
   * Building testing package for temp files/folder selection fixes
