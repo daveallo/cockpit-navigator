@@ -1,3 +1,3 @@
-## Cockpit Navigator 0.5.11-3
+## Cockpit Navigator 0.5.11-4
 
-* build package + fixed deletion method of tmp files
+* build package

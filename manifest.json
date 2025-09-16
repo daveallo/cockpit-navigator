@@ -4,7 +4,7 @@
     "title": "Cockpit Navigator",
     "description": "A File System Browser for Cockpit.",
     "version": "0.5.11",
-    "build_number": "3",
+    "build_number": "4",
     "stable": false,
     "author": "Josh Boudreau <jboudreau@45drives.com>",
     "git_url": "https://github.com/45Drives/cockpit-navigator",
@@ -32,8 +32,7 @@
             "rsync",
             "zip",
             "file",
-            "/bin/mkdir",
-            "/bin/rmdir",
+            "coreutils",
             "inotify-tools"
         ]
     },
@@ -71,7 +70,7 @@
     "changelog": {
         "urgency": "medium",
         "version": "0.5.11",
-        "build_number": "3",
+        "build_number": "4",
         "date": null,
         "packager": "Josh Boudreau <jboudreau@45drives.com>",
         "changes": []
