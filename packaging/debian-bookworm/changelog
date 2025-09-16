@@ -1,11 +1,11 @@
-cockpit-navigator (0.5.11-1jammy) jammy; urgency=medium
+cockpit-navigator (0.5.11-1bookworm) bookworm; urgency=medium
 
   * deleting tmp/navigotrs files and fixed auto  parent folder selection
 
  -- Rachit Hans <rhans@45drives.com>  Mon, 15 Sep 2025 14:17:03 -0300
 
-cockpit-navigator (0.5.10-1jammy) jammy; urgency=medium
+cockpit-navigator (0.5.10-1bookworm) bookworm; urgency=medium
 
-  * build for jammy
+  * build for bookworm
 
  -- Brett Kelly <bkelly@45drives.com>  Mon, 24 Feb 2025 14:40:50 -0300

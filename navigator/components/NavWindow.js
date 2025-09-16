@@ -331,6 +331,19 @@ export class NavWindow {
 	}
 
 	update_selection_info() {
+		if (this.selected_entries.size > 1) {
+			// get first element of the Set
+			const it = this.selected_entries.values();
+			const first  = it.next().value;   
+			const second = it.next().value;   
+			if(first.path.length<second.path.length){
+				this.selected_entries.delete(first)
+			}
+			if(first.path.length==second.path.length && first.filename=="/"){
+				this.selected_entries.delete(first)
+
+			}
+		  }
 		if (this.selected_entries.size > 1){
 			var name_fields = document.getElementsByClassName("nav-info-column-filename");
 			for (let name_field of name_fields) {

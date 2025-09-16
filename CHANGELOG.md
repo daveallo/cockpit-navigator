@@ -1,4 +1,3 @@
-## Cockpit Navigator 0.5.10-1
+## Cockpit Navigator 0.5.11-1
 
-* Disallow changing selected file/folder while editing permissions
-* Allow opening non-text file for editing via prompt
+* deleting tmp/navigotrs files and fixed auto  parent folder selection

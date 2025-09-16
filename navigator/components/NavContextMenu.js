@@ -100,46 +100,96 @@ export class NavContextMenu {
 		}
 		e.stopPropagation();
 	}
-
 	zip_for_download() {
 		return new Promise((resolve, reject) => {
-			var cmd = [
-				"/usr/share/cockpit/navigator/scripts/zip-for-download.py3",
-				this.nav_window_ref.pwd().path_str()
-			];
-			for (let entry of this.nav_window_ref.selected_entries) {
-				cmd.push(entry.path_str());
+		  const cmd = ["/usr/share/cockpit/navigator/scripts/zip-for-download.py3", 
+						this.nav_window_ref.pwd().path_str()];
+		  for (const entry of this.nav_window_ref.selected_entries) cmd.push(entry.path_str());
+		  const proc = cockpit.spawn(cmd, { superuser: "try", err: "out" });
+	  
+		  const safeParse = (raw) => {
+			const s = (raw || "").trim();
+			const start = s.indexOf("{");
+			const end = s.lastIndexOf("}");
+			if (start === -1 || end === -1 || end < start) {
+			  throw new Error("No JSON object in output: " + s.slice(0, 200));
 			}
-			var proc = cockpit.spawn(cmd, {superuser: "try", err: "out"});
-			proc.fail((e, data) => {
-				reject(JSON.parse(data));
-			});
-			proc.done((data) => {
-				resolve(JSON.parse(data));
-			});
-		});
-	}
-
-	async download(e) {
-		var download_target = "";
-		if (this.nav_window_ref.selected_entries.size === 1 && !(this.nav_window_ref.selected_entry() instanceof NavDir)) {
-			download_target = this.nav_window_ref.selected_entry();
-		} else {
-			this.nav_window_ref.start_load();
-			var result;
+			return JSON.parse(s.slice(start, end + 1));
+		  };
+	  
+		  proc.done((data) => {
 			try {
-				result = await this.zip_for_download();
-			} catch(e) {
-				this.nav_window_ref.stop_load();
-				this.nav_window_ref.modal_prompt.alert(e.message);
-				return;
+			  resolve(safeParse(data));
+			} catch (e) {
+			  console.error("zip_for_download done(raw):", data);
+			  reject({ message: e.message });
 			}
-			this.nav_window_ref.stop_load();
+		  });
+	  
+		  proc.fail((e, data) => {
+			try {
+			  reject(safeParse(data));
+			} catch {
+			  console.error("zip_for_download fail(raw):", data);
+			  reject({ message: String(data || e || "zip_for_download failed") });
+			}
+		  });
+		});
+	  }
+	  
+	async download(e) {
+		let download_target = "";
+		let result; // function-scoped so we can reference later
+	  
+		if (this.nav_window_ref.selected_entries.size === 1 &&
+			!(this.nav_window_ref.selected_entry() instanceof NavDir)) {
+		  download_target = this.nav_window_ref.selected_entry();
+		} else {
+		  this.nav_window_ref.start_load();
+		  try {
+			result = await this.zip_for_download();
 			download_target = new NavFile(result["archive-path"], result["stat"], this.nav_window_ref);
+			console.log("prepared archive for download:", result["archive-path"]);
+		  } catch (err) {
+			this.nav_window_ref.stop_load();
+			this.nav_window_ref.modal_prompt.alert(err.message);
+			return;
+		  } finally {
+			this.nav_window_ref.stop_load();
+		  }
 		}
-		var download = new NavDownloader(download_target);
-		download.download();
-	}
+	  		if (result?.["archive-path"]) {
+			const unitName = `nav-clean-on-open-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+			const script = [
+				'set -euo pipefail',
+				'if ! command -v inotifywait >/dev/null 2>&1; then ' +
+				  'sleep 300; rm -f -- "$ARCHIVE"; ' +
+				  '[ -n "${TEMPDIR:-}" ] && [[ "$TEMPDIR" == /tmp/navigator-* ]] && rm -rf -- "$TEMPDIR"; ' +
+				  'exit 0; fi',
+				'inotifywait -q -t 1800 -e open -- "$ARCHIVE" || true',
+				'rm -f -- "$ARCHIVE"',
+				'sleep 3600',
+				'[ -n "${TEMPDIR:-}" ] && [[ "$TEMPDIR" == /tmp/navigator-* ]] && rm -rf -- "$TEMPDIR" || :'
+			  ].join(' && ');
+			  const cmd = [
+					'systemd-run',
+					'--property=CollectMode=inactive-or-failed',
+					'--property=RuntimeMaxSec=90000',
+					'--unit', unitName,
+					'--setenv=ARCHIVE=' + result['archive-path'],
+					...(result['temp-dir'] ? ['--setenv=TEMPDIR=' + result['temp-dir']] : []),
+					'/bin/bash','-lc', script
+					];
+
+			await cockpit.spawn(cmd, { superuser: 'require', err: 'out' }).then(out => console.log(out));
+			console.log("scheduled cleanup:", unitName);
+			console.log("Deleting :", result['archive-path'], "in 30 minutes or after download starts.");
+		}
+	  
+		const downloader = new NavDownloader(download_target);
+		downloader.download();
+	  }
+	  
 
 	delete(e) {
 		this.nav_window_ref.delete_selected();
