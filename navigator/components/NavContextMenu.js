@@ -139,7 +139,7 @@ export class NavContextMenu {
 	  
 	  async download(e) {
 		let download_target = "";
-		let result; // function-scoped so we can reference later
+		let result; 
 	  
 		if (this.nav_window_ref.selected_entries.size === 1 &&
 			!(this.nav_window_ref.selected_entry() instanceof NavDir)) {
@@ -149,7 +149,6 @@ export class NavContextMenu {
 		  try {
 			result = await this.zip_for_download();
 			download_target = new NavFile(result["archive-path"], result["stat"], this.nav_window_ref);
-			console.log("prepared archive for download:", result["archive-path"]);
 		  } catch (err) {
 			this.nav_window_ref.stop_load();
 			this.nav_window_ref.modal_prompt.alert(err.message);
