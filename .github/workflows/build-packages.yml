@@ -2,7 +2,7 @@ name: Build Packages
 on:
   push:
     branches: 
-      - tmpFiles
+      - build
     tags:
       - 'v*.*.*'
 jobs:

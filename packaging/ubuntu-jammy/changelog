@@ -1,3 +1,9 @@
+cockpit-navigator (0.5.11-2jammy) jammy; urgency=medium
+
+  * Building testing package for temp files/folder selection fixes
+
+ -- Jordan Keough <jkeough@45drives.com>  Tue, 16 Sep 2025 05:57:34 -0300
+
 cockpit-navigator (0.5.11-1jammy) jammy; urgency=medium
 
   * deleting tmp/navigotrs files and fixed auto  parent folder selection
