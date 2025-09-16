@@ -1,3 +1,3 @@
-## Cockpit Navigator 0.5.11-4
+## Cockpit Navigator 0.5.12-1
 
-* build package
+* Building latest fixes
