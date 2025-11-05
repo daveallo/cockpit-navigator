@@ -44,3 +44,34 @@ endif
 
 uninstall-local:
 	rm -rf $(HOME)/.local/share/cockpit/navigator
+# Remote install defaults
+REMOTE_HOST ?= 192.168.123.5
+REMOTE_USER ?= root
+# Where navigator lands on the remote
+REMOTE_PREFIX ?= /usr/share/cockpit
+REMOTE_DESTDIR ?= $(DESTDIR)
+# Restart cockpit on remote after install (1=yes)
+RESTART_COCKPIT ?= 1
+# Tools
+SSH := ssh $(REMOTE_USER)@$(REMOTE_HOST)
+RSYNC := rsync -aH --delete
+
+# Remote install (uses ssh + rsync)
+install-remote:
+	@echo "Installing to $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_DESTDIR)$(REMOTE_PREFIX)"
+	$(SSH) "mkdir -p $(REMOTE_DESTDIR)$(REMOTE_PREFIX)"
+	$(RSYNC) navigator $(REMOTE_USER)@$(REMOTE_HOST):$(REMOTE_DESTDIR)$(REMOTE_PREFIX)/
+ifeq ($(DIST),$(EL7_DIST))
+	$(SSH) "sed -i 's/pf-c-button/btn/g;s/pf-m-primary/btn-primary/g;s/pf-m-secondary/btn-default/g;s/pf-m-danger/btn-danger/g' $(REMOTE_DESTDIR)$(REMOTE_PREFIX)/navigator/index.html"
+	$(SSH) "sed -i 's/pf-c-button/btn/g;s/pf-m-primary/btn-primary/g;s/pf-m-secondary/btn-default/g;s/pf-m-danger/btn-danger/g' $(REMOTE_DESTDIR)$(REMOTE_PREFIX)/navigator/components/ModalPrompt.js"
+endif
+ifneq ($(NAV_VERS),)
+	$(SSH) "printf '%s\n' 'export let NAVIGATOR_VERSION = \"$(NAV_VERS)\";' > $(REMOTE_DESTDIR)$(REMOTE_PREFIX)/navigator/version.js"
+endif
+ifeq ($(RESTART_COCKPIT),1)
+	$(SSH) "systemctl stop cockpit.socket || true; systemctl start cockpit.socket || true"
+endif
+
+# Optional convenience target
+uninstall-remote:
+	$(SSH) "rm -rf $(REMOTE_DESTDIR)$(REMOTE_PREFIX)/navigator"
